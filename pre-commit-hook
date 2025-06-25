@@ -1,0 +1,30 @@
+#!/bin/bash
+# This script is a pre-commit hook that checks for the presence of a specific file
+# and ensures that it is not empty. If the file is missing or empty, the commit
+# will be aborted with an error message.
+
+missing_readme=0
+
+# Find all directories excluding .git
+for dir in $(find . -type d -not -path '*/\.git*'); do
+    if [ "$dir" = "." ]; then
+        continue
+    fi
+    
+    # Check if README.md exists and is not empty
+    if [ ! -f "$dir/README.md" ]; then
+        echo "Missing README.md in $dir"
+        missing_readme=1
+    elif [ ! -s "$dir/README.md" ]; then
+        echo "README.md is empty in $dir"
+        missing_readme=1
+    fi
+done
+
+if [ $missing_readme -eq 1 ]; then
+    echo "Please add a README.md file to the directory."
+    exit 1
+fi
+
+echo "All directories contain a README.md file."
+exit 0
